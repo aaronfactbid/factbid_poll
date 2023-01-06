@@ -92,7 +92,7 @@ async function fnProcessTweets(dbConn, firstTweetId, lastTweetId, nextToken = ''
         let allHashtagsData = [];
         if(lastTweetId != '' || nextToken != ''){
             let params = {
-                query: '(#' + config.hashtag_bid + ' OR #' + config.hashtag_claim + ') -is:retweet',
+                query: '(#' + config.hashtag_bid + ' #' + config.hashtag_claim + ') -is:retweet',
                 expansions: [
                     'author_id',
                     'referenced_tweets.id'
@@ -166,21 +166,25 @@ async function fnProcessTweets(dbConn, firstTweetId, lastTweetId, nextToken = ''
                                 let regEx = new RegExp('\n', 'g');
                                 tweetText = tweetText.replace(regEx, ' ');
 
-                                let amount = 0;
-                                let currency = '';
+                                let amount = null;
+                                let currency = null;
                                 config.currency_symbols.map((currency_symbol) => {
                                     let n = tweetText.indexOf(currency_symbol);
                                     if( n != -1){
                                         currency = currency_symbol;
-                                        let pos = tweetText.indexOf(' ', n);
-                                        if(pos != -1){
-                                            amount = (tweetText.substring(n, pos)).replace(currency_symbol, '');
+                                        let p = tweetText.indexOf(' ', n);
+                                        if(p != -1){
+                                            if( (tweetText[n+1] == ' ') && (tweetText.length > n+1) ){
+                                                tweetText = tweetText.substring(0, n+1) + tweetText.substring(n + 2);
+                                            }
+                                            amount = (tweetText.substring(n, tweetText.indexOf(' ', n))).replace(currency_symbol, '');
                                         }
                                         else{
                                             amount = (tweetText.substring(n)).replace(currency_symbol, '');
                                         }
+                                        amount = amount.replace(new RegExp(',', 'g'), '');
                                         amount = parseInt(amount);
-                                        amount = (isNaN(amount)) ? 0 : amount; 
+                                        amount = (isNaN(amount)) ? null : amount;
                                     }
                                 })
 
@@ -317,7 +321,7 @@ async function fnProcessTweets(dbConn, firstTweetId, lastTweetId, nextToken = ''
 async function fnProcessStoredProcedure (firstTweetId, dbConn){
     if(firstTweetId){
         console.log('Calling stored procedure');
-        dbConn.query('CALL process_tweets(@first_tweet_id :=' + firstTweetId + ');', async (e, rows) => {
+        dbConn.query('CALL process_tweets(' + firstTweetId + ');', async (e, rows) => {
             if(e){
                 console.log('Error in processing stored procedure', e);
             }
@@ -353,7 +357,7 @@ async function fnProcessCloudflare(hashtags){
                 //console.log(response.data);
             })
             .catch(function (error) {
-                console.log('Error in Cloudflare API: ', error);
+                console.log('Error in Cloudflare API: ', error.response?.data);
             });
             await sleep(1000);
         }
