@@ -10,15 +10,18 @@ search_tweet needs to be called again after a waiting timeout to fetch new tweet
 "pm2 list" shows active by id and "pm2 stop [id]" stops the id
 
 #steps to install
-Step 1: Extract the zip file and upload in any folder on server
-Step 2: Run command "npm install"
-Step 3: Application code is configured to run on port number 3000, so make sure on server this post is open.
-Step 4: import the database backup file: tweets_by_hashtags.sql
-Step 5: Configure datbase credentials in ".env" file
-Step 6: Install pm2 using command "sudo npm install pm2 -g"
-Step 7: Start server by running command "sudo pm2 start index.js"
-Step 8: Open POSTMAN and make POST call to url: http://yourwebsite.com:3000/search_tweets
-Step 9: To view logs run command "pm2 logs"
+1: Put the code in a folder, such as: cd /opt; git clone https://github.com/aaronfactbid/factbid_poll.git
+2: Run command "npm install"
+3: Application code is configured to run on port number 3000, so make sure on server this post is open.
+4: import the database backup file: tweets_by_hashtags.sql
+5: Configure datbase credentials in ".env" file
+6: Install pm2 using command "sudo npm install pm2 -g"
+7: Start server by running command "sudo pm2 start index.js" from the directory with the code (/opt/factbid_poll)
+8: Open POSTMAN and make POST call to url: http://yourwebsite.com:3000/search_tweets
+9: To view logs run command "pm2 logs"
+10: I then do crontab -e and add this to call every 10 minutes:
+*/10 * * * * /var/tweet/factbid_tweets/TweetsByHashtags/update_tweets.sh &
+
 
 #might be necessary to update npm with:
 npm cache clean -f
