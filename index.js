@@ -317,7 +317,7 @@ async function fnProcessTweets(dbConn, firstTweetId, lastTweetId, nextToken = ''
 async function fnProcessStoredProcedure (firstTweetId, dbConn){
     if(firstTweetId){
         console.log('Calling stored procedure');
-        dbConn.query('CALL process_tweets(' + firstTweetId + ');', async (e, rows) => {
+        dbConn.query('CALL process_tweets(@first_tweet_id :=' + firstTweetId + ');', async (e, rows) => {
             if(e){
                 console.log('Error in processing stored procedure', e);
             }
