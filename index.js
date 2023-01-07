@@ -92,7 +92,7 @@ async function fnProcessTweets(dbConn, firstTweetId, lastTweetId, nextToken = ''
         let allHashtagsData = [];
         if(lastTweetId != '' || nextToken != ''){
             let params = {
-                query: '(#' + config.hashtag_bid + ' #' + config.hashtag_claim + ') -is:retweet',
+                query: '(#' + config.hashtag_bid + ' OR #' + config.hashtag_claim + ') -is:retweet',
                 expansions: [
                     'author_id',
                     'referenced_tweets.id'

@@ -20,7 +20,7 @@ search_tweet needs to be called again after a waiting timeout to fetch new tweet
 8: Open POSTMAN and make POST call to url: http://yourwebsite.com:3000/search_tweets
 9: To view logs run command "pm2 logs"
 10: I then do crontab -e and add this to call every 10 minutes:
-*/10 * * * * /var/tweet/factbid_tweets/TweetsByHashtags/update_tweets.sh &
+*/10 * * * * /opt-factbid_poll/update_tweets.sh &
 
 
 #might be necessary to update npm with:
