@@ -21,7 +21,8 @@ search_tweet needs to be called again after a waiting timeout to fetch new tweet
 9: To view logs run command "pm2 logs"
 10: I then do crontab -e and add this to call every 10 minutes:
 */10 * * * * /opt/factbid_poll/update_tweets.sh &
-
+11: I also add a database backup every 24 hours
+mysqldump --quote-names --allow-keywords --add-drop-table -u aaron -pXXXX factbid > factbid.2023-01-07_11-54.dump
 
 #might be necessary to update npm with:
 npm cache clean -f

@@ -35,7 +35,8 @@ app.post("/search_tweets", async (req, res) =>  {
         });
         dbConn.connect(async function(e) {
             if(!e){
-                console.log(`Database connection start`);
+                console.log('Process Start: ', moment().format("YYYY/MM/DD hh:mm:ss"));
+                console.log(`Database connection start: `);
 
                 console.log('Checking last Tweet in database.')
                 let sql = "SELECT * FROM tweet ORDER BY tweet_time DESC LIMIT 1";
@@ -53,11 +54,11 @@ app.post("/search_tweets", async (req, res) =>  {
 
                         let result = await fnProcessTweets(dbConn, firstTweetId, lastTweetId, 'FIRST_CALL');
                         if(result.firstTweetId){
-                            fnProcessStoredProcedure(result.firstTweetId, dbConn)
+                            await fnProcessStoredProcedure(result.firstTweetId, dbConn)
                         }
-                        if(result.allHashtagsData){
-                            fnProcessCloudflare(result.allHashtagsData)
-                        }                        
+                        //if(result.allHashtagsData){
+                            await fnProcessCloudflare(result.allHashtagsData)
+                        //}
 
                         response.status = 'success';
                         response.message = '';
@@ -66,12 +67,14 @@ app.post("/search_tweets", async (req, res) =>  {
                     else{
                         console.log('Error --> SELECT * FROM tweets --> failed');
                         res.send(response);
+                        console.log('Process End: ', moment().format("YYYY/MM/DD hh:mm:ss"));
                     }
                 });
             }
             else{
                 console.log('Server error --> database connection failed.');
                 res.send(response);
+                console.log('Process End: ', moment().format("YYYY/MM/DD hh:mm:ss"));
             }
         });
         dbConn.on(`end`, (err) => {
@@ -81,6 +84,7 @@ app.post("/search_tweets", async (req, res) =>  {
     catch (e) {
         console.log('Server error --> fnSearchTweets --> e', e)
         res.send(response)
+        console.log('Process End: ', moment().format("YYYY/MM/DD hh:mm:ss"));
     }
 });
 function sleep(ms) {
@@ -330,6 +334,7 @@ async function fnProcessStoredProcedure (firstTweetId, dbConn){
     }
 }
 async function fnProcessCloudflare(hashtags){
+    /*
     if(hashtags.length > 0){
         hashtags = hashtags.filter((v, i, a) => (v != '' && a.indexOf(v) === i) ); //filter and return only unique hashtag values 
         hashtags = hashtags.map((hashtag) => { return 'factbid.org/' + hashtag})
@@ -362,6 +367,27 @@ async function fnProcessCloudflare(hashtags){
             await sleep(1000);
         }
     }
+    */
+    axios({
+        method: 'post',
+        url: 'https://api.cloudflare.com/client/v4/zones/' + config.cloudflare_zone_id + '/purge_cache',
+        headers: {
+            'X-Auth-Email': config.cloudflare_email, 
+            'X-Auth-Key': config.cloudflare_key, 
+            'Content-Type': 'application/json', 
+        },
+        data : JSON.stringify({
+            "purge_everything":true
+        })
+    })
+    .then(function (response) {
+        console.log('Cloudflare response: ', JSON.stringify(response.data));
+        console.log('Process End: ', moment().format("YYYY/MM/DD hh:mm:ss"));
+    })
+    .catch(function (error) {
+        console.log('Error in Cloudflare API: ', error.response?.data);
+        console.log('Process End: ', moment().format("YYYY/MM/DD hh:mm:ss"));
+    });
 }
 
 app.use('*', function(req, res){
