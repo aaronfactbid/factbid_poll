@@ -28,3 +28,8 @@ mysqldump --quote-names --allow-keywords --add-drop-table -u aaron -pXXXX factbi
 npm cache clean -f
 npm install -g n
 sudo n stable
+
+#to have pm2 auto start
+pm2 startup systemd  # run as root
+cd /opt/factbid_poll; pm2 start index.js # start the polling routine
+pm2 save
