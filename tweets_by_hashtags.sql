@@ -27,8 +27,10 @@ CREATE TABLE `bid` (
   `sort` int(11) unsigned DEFAULT NULL,
   `exclude` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id_bid`),
-  KEY `id_hashtag` (`id_hashtag`,`sort`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `id_hashtag` (`id_hashtag`,`sort`),
+  KEY `recent` (`id_hashtag`,`created_ts`),
+  KEY `amount` (`id_hashtag`,`amount`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `claim` */
 
@@ -63,12 +65,13 @@ CREATE TABLE `hashtag` (
   `created_ts` timestamp NULL DEFAULT NULL,
   `title` text DEFAULT NULL,
   `category` char(1) DEFAULT NULL,
+  `template` text DEFAULT NULL,
   `sort` int(11) unsigned DEFAULT NULL,
   `exclude` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id_hashtag`),
   UNIQUE KEY `hashtag` (`hashtag`),
   KEY `id_tweet` (`id_tweet`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Table structure for table `process` */
 
@@ -84,7 +87,7 @@ CREATE TABLE `process` (
   `tweet_last_ts` timestamp NULL DEFAULT NULL,
   `finished_ts` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_process`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Table structure for table `tweet` */
 
@@ -138,7 +141,7 @@ CREATE TABLE `tweet` (
   KEY `hashtag4` (`hashtag4`),
   KEY `hashtag5` (`hashtag5`),
   KEY `id_process` (`id_process`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `currency` (
   `currency` varchar(3) NOT NULL,

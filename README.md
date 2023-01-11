@@ -30,6 +30,7 @@ npm install -g n
 sudo n stable
 
 #to have pm2 auto start
+see: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04#step-3-%E2%80%94-installing-pm2
 pm2 startup systemd  # run as root
 cd /opt/factbid_poll; pm2 start index.js # start the polling routine
 pm2 save
