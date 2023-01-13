@@ -56,6 +56,10 @@ app.post("/search_tweets", async (req, res) =>  {
                         if(result.firstTweetId){
                             await fnProcessStoredProcedure(result.firstTweetId, dbConn)
                         }
+                        else{
+                            dbConn.end();
+                        }
+
                         //if(result.allHashtagsData){
                             await fnProcessCloudflare(result.allHashtagsData)
                         //}
@@ -65,6 +69,7 @@ app.post("/search_tweets", async (req, res) =>  {
                         res.send(response);
                     }
                     else{
+                        dbConn.end();
                         console.log('Error --> SELECT * FROM tweets --> failed');
                         res.send(response);
                         console.log('Process End: ', moment().format("YYYY/MM/DD hh:mm:ss"));
